@@ -23,10 +23,10 @@ class GameRank:
 	#
 	def __init__(self,typeId,dateStr):
 		
-		HOST = 'HOSTADDRESS'
-		USER = 'USER'
-		PASSWORD = 'PASSWORD'
-		DB = 'DBNAME'
+		HOST = '192.168.0.13'
+		USER = 'root'
+		PASSWORD = 'password'
+		DB = 'bvc'
 		start = time.clock()
 		self.db = MySQLdb.connect(host=HOST,user=USER,passwd=PASSWORD,db=DB)
 		end = time.clock()
@@ -35,19 +35,19 @@ class GameRank:
 		self.moneyResults = {}
 		c = self.db.cursor()
 		start = time.clock()
-		c.execute("""select byId,sum(byreadbb) as money from bill_"""+dateStr+""" where typeId = %s  group by byid """, typeId)
+		c.execute("""select byId,sum(byreadbb) as money from bill_"""+dateStr+""" where typeId = %s  group by byid order by money desc """, typeId)
 		end = time.clock()
 		print "get data from mysql Time elapsed = ", end - start, " seconds "
 		rows = c.fetchall()
 		
 		start = time.clock()
 		for r in rows:
-			self.moneyResults[str(r[0])] = long(r[1])			
-			self.moneyLists = sorted(self.moneyResults.items(),key=lambda(k,v):(v,k),reverse=True)
+			self.moneyResults[str(r[0])] = long(r[1])	
+					
+		self.moneyLists = sorted(self.moneyResults.items(),key=lambda(k,v):(v,k),reverse=True)
 		end = time.clock()
 		print "in python Time elapsed = ", end - start, " seconds "
 		
-	def 
 	
 	
 	#
@@ -69,7 +69,7 @@ class GameRank:
 	#
 	def getRankById(self,byid):
 		try:
-			print [y[0] for y in b].index(byid)
+			print [y[0] for y in self.moneyLists].index(byid)
 		except ValueError, e:
 			print e
 		
@@ -80,4 +80,4 @@ if __name__ == "__main__":
 	# '090514' bill archive table name
 	g = GameRank(1,'090514')
 	g.getTopRank(10)
-	# g.getRankById('21284841')
+	g.getRankById('21284841')
